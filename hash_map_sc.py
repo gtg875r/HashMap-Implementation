@@ -106,11 +106,10 @@ class HashMap:
                 key_linkedlist.remove(key)
             except:
                 pass
-            self._buckets.set_at_index(list_size, LinkedList())
-            key_linkedlist.insert(0, value)
+            key_linkedlist.insert(key, value)
             self._size += 1
         else:
-            key_linkedlist.insert(0, value)
+            key_linkedlist.insert(key, value)
 
             self._size += 1
         # while list_size > 0:
@@ -178,6 +177,20 @@ class HashMap:
         new_buckets = DynamicArray()
         old_buckets = self._buckets
 
+        # if self._is_prime(new_capacity):
+        #
+        #     current_capacity = self._capacity
+        #     self._capacity = new_capacity
+        #     for _ in range(current_capacity, self._capacity):
+        #         self._buckets.append(LinkedList())
+        #
+        # else:
+        #     new_capacity = self._next_prime(30)
+        #     current_capacity = self._capacity
+        #     self._capacity = new_capacity
+        #     for _ in range(current_capacity, new_capacity):
+        #         self._buckets.append(LinkedList())
+
         if self._is_prime(new_capacity):
 
             current_capacity = self._capacity
@@ -185,25 +198,32 @@ class HashMap:
             for item_index in range(self._capacity):
                 new_buckets.append(LinkedList())
             self._buckets = new_buckets
+            self._size = 0
             for item_index in range(current_capacity):
                 if old_buckets.get_at_index(item_index).length() > 0:
-                    list_needed = old_buckets.get_at_index(item_index)
-                    node_needed = list_needed.contains(0)
-                    new_hash = self._hash_function(node_needed.key) % self.get_capacity()
-                    self.put(new_hash, node_needed)
+                    for item in old_buckets.get_at_index(item_index):
+                        old_key = item.key
+                        old_value = item.value
+                        # new_hash = self._hash_function(old_key) % self.get_capacity()
+                        self.put(old_key, old_value)
+            #         list_needed = old_buckets.get_at_index(item_index)
+            #         node_needed = list_needed.contains(0)
+            #         new_hash = self._hash_function(node_needed.key) % self.get_capacity()
+            #         self.put(new_hash, node_needed)
 
         else:
-            new_capacity = self._next_prime(30)
+            new_capacity = self._next_prime(new_capacity)
             current_capacity = self._capacity
             self._capacity = new_capacity
             self._buckets = new_buckets
+            self._size = 0
             for item_index in range(current_capacity):
                 if old_buckets.get_at_index(item_index).length() > 0:
-                    list_needed = old_buckets.get_at_index(item_index)
-                    node_needed = list_needed.contains(0)
-                    print(node_needed.key)
-                    new_hash = self._hash_function(node_needed.key) % self.get_capacity()
-                    self.put(new_hash, node_needed)
+                    for item in old_buckets.get_at_index(item_index):
+                        old_key = item.key
+                        old_value = item.value
+                        # new_hash = self._hash_function(old_key) % self.get_capacity()
+                        self.put(old_key, old_value)
 
         return
 
