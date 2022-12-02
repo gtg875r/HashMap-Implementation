@@ -92,20 +92,60 @@ class HashMap:
         """
         TODO: Write this implementation
         """
-        key_linkedlist = self._buckets.get_at_index(key)
+
+        if self.table_load() >= 1:
+            new_capacity = self._next_prime(self._capacity * 2)
+            self.resize_table(new_capacity)
+
+        hash_key = self._hash_function(key) % self.get_capacity()
+
+        key_linkedlist = self._buckets.get_at_index(hash_key)
         list_size = key_linkedlist.length()
-        key_linkedlist.
+        if list_size > 0:
+            self._buckets.set_at_index(list_size, LinkedList())
+            key_linkedlist.insert(0, value)
+        else:
+            key_linkedlist.insert(0, value)
+
+            self._size += 1
+        # while list_size > 0:
+        #     # print(hash_key)
+        #     if hash_key >= self._capacity-1:
+        #         # hash_key = hash_key - self._capacity+1
+        #         key_linkedlist = self._buckets.get_at_index(hash_key-1)
+        #         list_size = key_linkedlist.length()
+        #         break
+        #     else:
+        #         hash_key += 1
+        #         key_linkedlist = self._buckets.get_at_index(hash_key)
+        #         list_size = key_linkedlist.length()
+
+        # key_linkedlist.
+
+
+        return
 
     def empty_buckets(self) -> int:
         """
         TODO: Write this implementation
         """
-        pass
+
+        total_empty_buckets = 0
+        original_da_length = self._buckets.length()
+
+        for bucket_index in range(original_da_length):
+            linked_list = self._buckets.get_at_index(bucket_index)
+            linked_list_length = linked_list.length()
+            if linked_list_length == 0:
+                total_empty_buckets += 1
+        return total_empty_buckets
+
 
     def table_load(self) -> float:
         """
         TODO: Write this implementation
         """
+
         table_size = self.get_size()
         table_capacity = self.get_capacity()
         final_load = table_size/table_capacity
@@ -115,31 +155,88 @@ class HashMap:
         """
         TODO: Write this implementation
         """
-        pass
+
+        original_da_length = self._buckets.length()
+
+        for bucket_index in range(original_da_length):
+            self._buckets.set_at_index(bucket_index, LinkedList())
+
+        self._size = 0
+        return
+
 
     def resize_table(self, new_capacity: int) -> None:
         """
         TODO: Write this implementation
         """
-        pass
+
+        if self._is_prime(new_capacity):
+
+            current_capacity = self._capacity
+            self._capacity = new_capacity
+            for _ in range(current_capacity, self._capacity):
+                self._buckets.append(LinkedList())
+
+        else:
+            new_capacity = self._next_prime(30)
+            current_capacity = self._capacity
+            self._capacity = new_capacity
+            for _ in range(current_capacity, new_capacity):
+                self._buckets.append(LinkedList())
+
 
     def get(self, key: str):
         """
         TODO: Write this implementation
         """
-        pass
+
+        da_length = self._buckets.length()
+        hash_key = self._hash_function(key) % self.get_capacity()
+
+        for list_index in range(da_length):
+            if list_index == hash_key:
+                if self._buckets.get_at_index(list_index).length() > 0:
+                    list_needed = self._buckets.get_at_index(list_index)
+                    node_needed = list_needed.contains(0)
+                    return node_needed.value
+                else:
+                    return None
+
 
     def contains_key(self, key: str) -> bool:
         """
         TODO: Write this implementation
         """
-        pass
+        da_length = self._buckets.length()
+        hash_key = self._hash_function(key) % self.get_capacity()
+
+        for list_index in range(da_length):
+            if list_index == hash_key:
+                if self._buckets.get_at_index(list_index).length() > 0:
+
+                    return True
+                else:
+                    return False
+
 
     def remove(self, key: str) -> None:
         """
         TODO: Write this implementation
         """
-        pass
+
+        hash_key = self._hash_function(key)
+
+        original_da_length = self._buckets.length()
+        new_linked_list = LinkedList()
+
+        for bucket_index in range(original_da_length):
+            if bucket_index == hash_key:
+                self._buckets.set_at_index(new_linked_list)
+
+        self._size -= 1
+
+        return
+
 
     def get_keys_and_values(self) -> DynamicArray:
         """
