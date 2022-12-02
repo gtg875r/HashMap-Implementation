@@ -102,8 +102,13 @@ class HashMap:
         key_linkedlist = self._buckets.get_at_index(hash_key)
         list_size = key_linkedlist.length()
         if list_size > 0:
+            try:
+                key_linkedlist.remove(key)
+            except:
+                pass
             self._buckets.set_at_index(list_size, LinkedList())
             key_linkedlist.insert(0, value)
+            self._size += 1
         else:
             key_linkedlist.insert(0, value)
 
@@ -170,20 +175,37 @@ class HashMap:
         TODO: Write this implementation
         """
 
+        new_buckets = DynamicArray()
+        old_buckets = self._buckets
+
         if self._is_prime(new_capacity):
 
             current_capacity = self._capacity
             self._capacity = new_capacity
-            for _ in range(current_capacity, self._capacity):
-                self._buckets.append(LinkedList())
+            for item_index in range(self._capacity):
+                new_buckets.append(LinkedList())
+            self._buckets = new_buckets
+            for item_index in range(current_capacity):
+                if old_buckets.get_at_index(item_index).length() > 0:
+                    list_needed = old_buckets.get_at_index(item_index)
+                    node_needed = list_needed.contains(0)
+                    new_hash = self._hash_function(node_needed.key) % self.get_capacity()
+                    self.put(new_hash, node_needed)
 
         else:
             new_capacity = self._next_prime(30)
             current_capacity = self._capacity
             self._capacity = new_capacity
-            for _ in range(current_capacity, new_capacity):
-                self._buckets.append(LinkedList())
+            self._buckets = new_buckets
+            for item_index in range(current_capacity):
+                if old_buckets.get_at_index(item_index).length() > 0:
+                    list_needed = old_buckets.get_at_index(item_index)
+                    node_needed = list_needed.contains(0)
+                    print(node_needed.key)
+                    new_hash = self._hash_function(node_needed.key) % self.get_capacity()
+                    self.put(new_hash, node_needed)
 
+        return
 
     def get(self, key: str):
         """
