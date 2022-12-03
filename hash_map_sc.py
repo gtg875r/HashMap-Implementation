@@ -92,7 +92,6 @@ class HashMap:
         """
         TODO: Write this implementation
         """
-
         if self.table_load() >= 1:
             new_capacity = self._next_prime(self._capacity * 2)
             self.resize_table(new_capacity)
@@ -103,7 +102,9 @@ class HashMap:
         list_size = key_linkedlist.length()
         if list_size > 0:
             try:
-                key_linkedlist.remove(key)
+                contain_test = key_linkedlist.remove(key)
+                if contain_test is True:
+                    self._size -= 1
             except:
                 pass
             key_linkedlist.insert(key, value)
@@ -126,6 +127,9 @@ class HashMap:
 
         # key_linkedlist.
 
+        # print(value)
+        # print(key)
+        # print(self._size)
 
         return
 
@@ -177,20 +181,6 @@ class HashMap:
         new_buckets = DynamicArray()
         old_buckets = self._buckets
 
-        # if self._is_prime(new_capacity):
-        #
-        #     current_capacity = self._capacity
-        #     self._capacity = new_capacity
-        #     for _ in range(current_capacity, self._capacity):
-        #         self._buckets.append(LinkedList())
-        #
-        # else:
-        #     new_capacity = self._next_prime(30)
-        #     current_capacity = self._capacity
-        #     self._capacity = new_capacity
-        #     for _ in range(current_capacity, new_capacity):
-        #         self._buckets.append(LinkedList())
-
         if self._is_prime(new_capacity):
 
             current_capacity = self._capacity
@@ -215,6 +205,8 @@ class HashMap:
             new_capacity = self._next_prime(new_capacity)
             current_capacity = self._capacity
             self._capacity = new_capacity
+            for item_index in range(self._capacity):
+                new_buckets.append(LinkedList())
             self._buckets = new_buckets
             self._size = 0
             for item_index in range(current_capacity):
@@ -232,17 +224,28 @@ class HashMap:
         TODO: Write this implementation
         """
 
+
         da_length = self._buckets.length()
         hash_key = self._hash_function(key) % self.get_capacity()
 
-        for list_index in range(da_length):
-            if list_index == hash_key:
-                if self._buckets.get_at_index(list_index).length() > 0:
-                    list_needed = self._buckets.get_at_index(list_index)
-                    node_needed = list_needed.contains(0)
-                    return node_needed.value
-                else:
-                    return None
+        linked_list = self._buckets.get_at_index(hash_key)
+        for item in linked_list:
+            if item.key == key:
+                return item.value
+
+        return None
+
+        # da_length = self._buckets.length()
+        # hash_key = self._hash_function(key) % self.get_capacity()
+        #
+        # for list_index in range(da_length):
+        #     if list_index == hash_key:
+        #         if self._buckets.get_at_index(list_index).length() > 0:
+        #             list_needed = self._buckets.get_at_index(list_index)
+        #             node_needed = list_needed.contains(0)
+        #             return node_needed.value
+        #         else:
+        #             return None
 
 
     def contains_key(self, key: str) -> bool:
@@ -252,13 +255,12 @@ class HashMap:
         da_length = self._buckets.length()
         hash_key = self._hash_function(key) % self.get_capacity()
 
-        for list_index in range(da_length):
-            if list_index == hash_key:
-                if self._buckets.get_at_index(list_index).length() > 0:
+        linked_list = self._buckets.get_at_index(hash_key)
+        for item in linked_list:
+            if item.key == key:
+                return True
 
-                    return True
-                else:
-                    return False
+        return False
 
 
     def remove(self, key: str) -> None:
@@ -266,16 +268,14 @@ class HashMap:
         TODO: Write this implementation
         """
 
-        hash_key = self._hash_function(key)
+        da_length = self._buckets.length()
+        hash_key = self._hash_function(key) % self.get_capacity()
 
-        original_da_length = self._buckets.length()
-        new_linked_list = LinkedList()
-
-        for bucket_index in range(original_da_length):
-            if bucket_index == hash_key:
-                self._buckets.set_at_index(new_linked_list)
-
-        self._size -= 1
+        linked_list = self._buckets.get_at_index(hash_key)
+        for item in linked_list:
+            if item.key == key:
+                linked_list.remove(key)
+                self._size -= 1
 
         return
 
@@ -284,15 +284,14 @@ class HashMap:
         """
         TODO: Write this implementation
         """
-        return_da = DynamicArray
+        return_da = DynamicArray()
         original_da_length = self._buckets.length()
 
         for bucket_index in range(original_da_length):
             linked_list = self._buckets.get_at_index(bucket_index)
             linked_list_length = linked_list.length()
-            for item in range(linked_list_length):
-                final_value = linked_list.contains(item)
-                return_da.append((str(bucket_index), str(final_value)))
+            for item in linked_list:
+                return_da.append((item.key, item.value))
         return return_da
 
 
