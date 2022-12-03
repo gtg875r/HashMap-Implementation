@@ -3,7 +3,7 @@
 # Course: CS261 - Data Structures
 # Assignment: #6 HashMap
 # Due Date: 12/2/2022
-# Description:
+# Description: Chaining implementation of hash map
 
 
 from a6_include import (DynamicArray, LinkedList,
@@ -90,7 +90,8 @@ class HashMap:
 
     def put(self, key: str, value: object) -> None:
         """
-        TODO: Write this implementation
+        Computes a hash key to add a key/value pair.  Appends the key/value pair as a SL Node to the linked list located
+         at the hash key.
         """
         if self.table_load() >= 1:
             new_capacity = self._next_prime(self._capacity * 2)
@@ -113,29 +114,12 @@ class HashMap:
             key_linkedlist.insert(key, value)
 
             self._size += 1
-        # while list_size > 0:
-        #     # print(hash_key)
-        #     if hash_key >= self._capacity-1:
-        #         # hash_key = hash_key - self._capacity+1
-        #         key_linkedlist = self._buckets.get_at_index(hash_key-1)
-        #         list_size = key_linkedlist.length()
-        #         break
-        #     else:
-        #         hash_key += 1
-        #         key_linkedlist = self._buckets.get_at_index(hash_key)
-        #         list_size = key_linkedlist.length()
-
-        # key_linkedlist.
-
-        # print(value)
-        # print(key)
-        # print(self._size)
 
         return
 
     def empty_buckets(self) -> int:
         """
-        TODO: Write this implementation
+        Surveys all the linked lists in the dynamic array, and counts/returns how many are empty.
         """
 
         total_empty_buckets = 0
@@ -151,7 +135,7 @@ class HashMap:
 
     def table_load(self) -> float:
         """
-        TODO: Write this implementation
+        Calculates and returns the table load.  size divided by capacity.
         """
 
         table_size = self.get_size()
@@ -161,7 +145,8 @@ class HashMap:
 
     def clear(self) -> None:
         """
-        TODO: Write this implementation
+        Clears the contents of the has map, but does not change the capacity of the hash map.  Updates with an empty
+        new Dyanmic Array.
         """
 
         original_da_length = self._buckets.length()
@@ -175,8 +160,13 @@ class HashMap:
 
     def resize_table(self, new_capacity: int) -> None:
         """
-        TODO: Write this implementation
+        Takes a new capacity as a parameter, if the number is prime it extends the dynamic array to that capacity,
+        and then re-hashes each value and puts() them into the respective linked list.  If the number is not prime,
+        it rounds up to the nearest prime number and then follows the same procedure.
         """
+
+        if new_capacity < 1:
+            return
 
         new_buckets = DynamicArray()
         old_buckets = self._buckets
@@ -194,12 +184,8 @@ class HashMap:
                     for item in old_buckets.get_at_index(item_index):
                         old_key = item.key
                         old_value = item.value
-                        # new_hash = self._hash_function(old_key) % self.get_capacity()
                         self.put(old_key, old_value)
-            #         list_needed = old_buckets.get_at_index(item_index)
-            #         node_needed = list_needed.contains(0)
-            #         new_hash = self._hash_function(node_needed.key) % self.get_capacity()
-            #         self.put(new_hash, node_needed)
+
 
         else:
             new_capacity = self._next_prime(new_capacity)
@@ -214,18 +200,16 @@ class HashMap:
                     for item in old_buckets.get_at_index(item_index):
                         old_key = item.key
                         old_value = item.value
-                        # new_hash = self._hash_function(old_key) % self.get_capacity()
                         self.put(old_key, old_value)
 
         return
 
     def get(self, key: str):
         """
-        TODO: Write this implementation
+        Takes a key as a parameter, and then searches the respective linked list for that key.  If the key is found,
+        the method returns the SL object.  Else it returns None.
         """
 
-
-        da_length = self._buckets.length()
         hash_key = self._hash_function(key) % self.get_capacity()
 
         linked_list = self._buckets.get_at_index(hash_key)
@@ -235,24 +219,13 @@ class HashMap:
 
         return None
 
-        # da_length = self._buckets.length()
-        # hash_key = self._hash_function(key) % self.get_capacity()
-        #
-        # for list_index in range(da_length):
-        #     if list_index == hash_key:
-        #         if self._buckets.get_at_index(list_index).length() > 0:
-        #             list_needed = self._buckets.get_at_index(list_index)
-        #             node_needed = list_needed.contains(0)
-        #             return node_needed.value
-        #         else:
-        #             return None
 
 
     def contains_key(self, key: str) -> bool:
         """
-        TODO: Write this implementation
+        Searches each linked list in the dyanmic array for the key that is provided as a parameter.  If the key is
+        found then the method returns True.  If not key is not found the method returns False.
         """
-        da_length = self._buckets.length()
         hash_key = self._hash_function(key) % self.get_capacity()
 
         linked_list = self._buckets.get_at_index(hash_key)
@@ -265,10 +238,10 @@ class HashMap:
 
     def remove(self, key: str) -> None:
         """
-        TODO: Write this implementation
+        Searches the Linked List for a SL object with this key.  If the key is found, then the object is removed from
+        the list and the size of the Hash Map is reduced by 1.  If not found, nothing happens.
         """
 
-        da_length = self._buckets.length()
         hash_key = self._hash_function(key) % self.get_capacity()
 
         linked_list = self._buckets.get_at_index(hash_key)
@@ -282,14 +255,13 @@ class HashMap:
 
     def get_keys_and_values(self) -> DynamicArray:
         """
-        TODO: Write this implementation
+        Method that returns a dyanmic array of every key/value pair in the hash map as a list of tuples.
         """
         return_da = DynamicArray()
         original_da_length = self._buckets.length()
 
         for bucket_index in range(original_da_length):
             linked_list = self._buckets.get_at_index(bucket_index)
-            linked_list_length = linked_list.length()
             for item in linked_list:
                 return_da.append((item.key, item.value))
         return return_da
@@ -297,11 +269,53 @@ class HashMap:
 
 def find_mode(da: DynamicArray) -> (DynamicArray, int):
     """
-    TODO: Write this implementation
+    Function that takes a dyanmic array, and creates a hash map from the values in the array.  Based on that hash map,
+    the mode is found.  The function returns a dyanmic array of the values with the highest frequency (or value with
+    the highest frequency), as well as the number of times that/those values are found.  These two items are returned
+    as a tuple.
     """
     # if you'd like to use a hash map,
     # use this instance of your Separate Chaining HashMap
     map = HashMap()
+    final_da = DynamicArray()
+
+    da_length = da.length()
+    for da_index in range(da_length):
+        new_item = da.get_at_index(da_index)
+        contains_new_item = map.contains_key(new_item)
+
+        if contains_new_item is True:
+            current_value = map.get(new_item) + 1
+            map.put(new_item, current_value)
+            current_highest_key = final_da.get_at_index(0)
+
+            if current_value == map.get(current_highest_key):
+                if new_item != current_highest_key:
+                    final_da.append(new_item)
+            elif current_value > map.get(current_highest_key):
+                final_da = DynamicArray()
+                final_da.append(new_item)
+
+        else:
+            map.put(new_item, 1)
+            if final_da.length() == 0:
+                final_da.append(new_item)
+            else:
+                current_value = 1
+                current_highest_key = final_da.get_at_index(0)
+
+                if current_value == map.get(current_highest_key):
+                    if new_item != current_highest_key:
+                        final_da.append(new_item)
+
+
+
+    a_mode = final_da.get_at_index(0)
+    mode_value = map.get(a_mode)
+
+    return (final_da, mode_value)
+
+
 
 
 # ------------------- BASIC TESTING ---------------------------------------- #
