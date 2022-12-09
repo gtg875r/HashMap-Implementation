@@ -1,4 +1,4 @@
-# HashMap-Implementation
+# HashMap Implementation
 
 Portfolio project implementing a HashMap using Separate Chaining and Open Addressing with Quadratic Probing.
 <br><br>
